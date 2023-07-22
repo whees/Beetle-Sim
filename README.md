@@ -2,4 +2,5 @@
 Milk weed bug stochastic/Conway simulation  
 ## Controls
 Mouse: add beetles  
-k: massacre beetes
+b: raze beetes
+p: raze plant + flowers
