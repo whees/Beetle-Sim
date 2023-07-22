@@ -1,6 +1,6 @@
 # Beetle-Sim
-Milk weed bug stochastic/Conway simulation  
+Milk Weed Bug stochastic/Conway simulation  
 ## Controls
-Mouse: add beetles  
+mouse: add beetles  
 b: raze beetes  
 p: raze plant + flowers  
