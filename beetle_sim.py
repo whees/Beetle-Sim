@@ -23,7 +23,7 @@ scale= 10
 dimx = 100
 dimy = 100
 
-tmax = 20
+tmax = 5
 ftmax = 200
 
 
@@ -41,32 +41,33 @@ stem_to_flower = (100,255,100)
 
 
 
-def update(surface, cur, xy,timers,pollens,ftimers):
-    for i in range(400):
-        x,y = xy
-        r = np.random.random()
-        if r < 0.01:
-            x, y =  0.00 * x + 0.00 * y,  0.00 * x + 0.16 * y + 0.00
-        elif r < 0.85:
-            x, y =  0.91 * x + 0.00 * y, -0.0 * x + 0.86 * y + 1.60
-        elif r < 0.925:
-            x, y =  0.20 * x - 0.26 * y,  0.1 * x + 0.1 * y + 1.60
-        else:
-            x, y = -0.20* x + 0.26 * y,  0.1* x + 0.1 * y + 1
-    
+def update(surface, cur, xy,timers,pollens,ftimers,kill_plant):
+    if not kill_plant:
+        for i in range(400):
+            x,y = xy
+            r = np.random.random()
+            if r < 0.01:
+                x, y =  0.00 * x + 0.00 * y,  0.00 * x + 0.16 * y + 0.00
+            elif r < 0.85:
+                x, y =  0.91 * x + 0.00 * y, -0.0 * x + 0.86 * y + 1.60
+            elif r < 0.925:
+                x, y =  0.20 * x - 0.26 * y,  0.1 * x + 0.1 * y + 1.60
+            else:
+                x, y = -0.20* x + 0.26 * y,  0.1* x + 0.1 * y + 1
         
-        
-        xy = [x,y]
-        
-        X = int((plant_scale*x + dimx / 2))
-        Y = dimy - int((plant_scale*y)) 
-        
-     
-        
-        if X in range(dimx) and Y in range(dimy):
-            if cur[X][Y] != flower:
-                cur[X][Y] = stem
-        
+            
+            
+            xy = [x,y]
+            
+            X = int((plant_scale*x + dimx / 2))
+            Y = dimy - int((plant_scale*y)) 
+            
+         
+            
+            if X in range(dimx) and Y in range(dimy):
+                if cur[X][Y] != flower:
+                    cur[X][Y] = stem
+            
             
     
     for X in range(dimx):
@@ -98,7 +99,7 @@ def update(surface, cur, xy,timers,pollens,ftimers):
                     cur[X][Y] = flower
                     col = empty_to_flower
                     pollens[X][Y] = False
-                elif n_beetle > 0 and n_stem > 2:
+                elif (n_beetle > 0 and not kill_plant and n_stem > 2) or (n_beetle > 0 and kill_plant and n_stem > 0 ) :
                     cur[X][Y] = beetle
                     col = beetle_to_empty 
             elif cur[X][Y] == beetle:
@@ -187,6 +188,7 @@ def main(cellsize):
     xy = [0,0]
     penup = True
     kill_beetle = False
+    kill_plant = False
     
 
     
@@ -210,12 +212,12 @@ def main(cellsize):
                 return
                 
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_p:
-                    penup = not penup
                 if event.key == pygame.K_SPACE:
                     eat = not eat
-                if event.key == pygame.K_k:
+                if event.key == pygame.K_b:
                     kill_beetle = True
+                if event.key == pygame.K_p:
+                     kill_plant = not kill_plant
             elif event.type == pygame.MOUSEBUTTONDOWN:
                penup = False
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -230,7 +232,7 @@ def main(cellsize):
             
 
         surface.fill(col_background)
-        cells,xy,timers,pollens,ftimers = update(surface, cells, xy,timers,pollens,ftimers)
+        cells,xy,timers,pollens,ftimers = update(surface, cells, xy,timers,pollens,ftimers,kill_plant)
         pygame.display.update()
         
         n_flower = 0
@@ -257,7 +259,8 @@ def main(cellsize):
                     if cells[X][Y] == beetle:
                         timers[X][Y] = tmax - 1
             kill_beetle = False
-    
+        
+
     
 
                 
